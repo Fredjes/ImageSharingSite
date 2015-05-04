@@ -95,14 +95,13 @@ public class ImageRepository {
 
     public byte[] getImage(String image) {
 
-	if (findFileName(image) == null) {
-	    return null;
-	}
-
 	addRequest(image);
 	byte[] b = imageCache.get(image);
 
 	if (b == null) {
+	    if (findFileName(image) == null) {
+		return null;
+	    }
 	    System.out.println("loading from disk");
 	    imageCache.put(image, loadImageFromDisk(image));
 	    return getImage(image);
@@ -155,6 +154,7 @@ public class ImageRepository {
 	@Override
 	public Thread newThread(Runnable r) {
 	    Thread t = new Thread(r);
+
 	    t.setName("I/O Thread " + counter.getAndIncrement());
 	    t.setDaemon(false);
 	    return t;

@@ -17,7 +17,7 @@ import persistence.ImageRepository;
 public class Images {
 
     @POST
-    @Consumes({"image/jpeg", "image/png"})
+    @Consumes("image/*")
     public Response testPost(InputStream in, @HeaderParam("Content-Type") String fileType, @HeaderParam("Content-Length") long fileSize) {
 	try {
 	    String type = "";
@@ -27,11 +27,7 @@ public class Images {
 	    while ((by = in.read()) != -1) {
 		b[pos++] = (byte) by;
 	    }
-	    if (fileType.equals("image/jpeg")) {
-		type = "jpg";
-	    } else {
-		type = "png";
-	    }
+	    type = fileType.replace("image/", "");
 	    return Response.created(URI.create("/" + ImageRepository.getInstance().saveImage(b, type))).build();
 	} catch (IOException ex) {
 	}
@@ -41,7 +37,7 @@ public class Images {
 
     @Path("{imgId}")
     @GET
-    @Produces({"image/jpeg", "image/png"})
+    @Produces("image/*")
     public Response get(@PathParam("imgId") String key) {
 	byte[] out = ImageRepository.getInstance().getImage(key);
 	if (out == null) {
