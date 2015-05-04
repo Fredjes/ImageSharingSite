@@ -1,5 +1,6 @@
 package persistence;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +16,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.enterprise.context.ApplicationScoped;
+import resources.RandomString;
 
+@ApplicationScoped
 public class ImageRepository {
 
     private static ImageRepository INSTANCE;
@@ -40,50 +44,101 @@ public class ImageRepository {
 
     private final Path basePath = Paths.get("imgrepo");
 
+    private RandomString randomer = new RandomString(8);
+
     private ImageRepository() {
+	if (!Files.exists(basePath)) {
+	    try {
+		Files.createDirectory(basePath);
+	    } catch (IOException ex) {
+		ex.printStackTrace();
+	    }
+	}
 	scheduler.scheduleAtFixedRate(() -> {
 	    ArrayList<String> thingsToDelete = new ArrayList();
 	    cachingTreshold.forEach((key, value) -> {
 		if (!isQueued(key)) {
 		    cachingTreshold.put(key, value - decrementValue);
 		    if (cachingTreshold.get(key) <= purgeValue) {
+			System.out.println("deleting " + key);
 			thingsToDelete.add(key);
 		    }
 		}
 	    });
 
 	    thingsToDelete.forEach(cachingTreshold::remove);
+	    thingsToDelete.forEach(imageCache::remove);
 
 	    for (int i = 0; i < Math.min(ioTasksPerCycle, ioQueue.size()); i++) {
 		ioExecutor.execute(() -> {
 		    DataPair pair = ioQueue.poll();
 		    try {
-			Files.write(basePath.resolve(pair.getKey() + ".dat"), pair.getData(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			System.out.println("Saving " + basePath.resolve(pair.getKey() + "." + pair.getExtension()).toAbsolutePath());
+			Files.write(basePath.resolve(pair.getKey() + "." + pair.getExtension()), pair.getData(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		    } catch (IOException ex) {
-
+			ex.printStackTrace();
 		    }
 		});
 	    }
 
-	}, 120, 30, TimeUnit.SECONDS);
+	}, 30, 30, TimeUnit.SECONDS);
     }
 
     private boolean isQueued(String key) {
 	return ioQueue.stream().anyMatch((pair) -> pair.getKey().equals(key));
     }
 
-    public void addRequest(String image) {
+    private void addRequest(String image) {
 	cachingTreshold.putIfAbsent(image, 0);
 	cachingTreshold.put(image, cachingTreshold.get(image) + incrementValue);
     }
 
     public byte[] getImage(String image) {
-	return imageCache.getOrDefault(this, null/*TODO: Add loading from disk */);
+
+	if (findFileName(image) == null) {
+	    return null;
+	}
+
+	addRequest(image);
+	byte[] b = imageCache.get(image);
+
+	if (b == null) {
+	    System.out.println("loading from disk");
+	    imageCache.put(image, loadImageFromDisk(image));
+	    return getImage(image);
+	} else {
+	    System.out.println("loading from cache");
+	}
+	return b;
     }
 
-    public void saveImage(String key, byte[] imageData) {
+    private byte[] loadImageFromDisk(String key) {
+	try {
+	    String name = findFileName(key);
+	    if (name == null) {
+		return null;
+	    }
+	    return Files.readAllBytes(basePath.resolve(name));
+	} catch (IOException ex) {
+	    ex.printStackTrace();
+	}
+	return null;
+    }
+
+    private String findFileName(String key) {
+	for (File p : basePath.toFile().listFiles()) {
+	    if (p.getName().contains(key)) {
+		return p.getName();
+	    }
+	}
+	return null;
+    }
+
+    public String saveImage(byte[] imageData, String extension) {
+	String key = randomer.nextString();
 	imageCache.put(key, imageData);
-	ioQueue.add(new DataPair(key, imageData));
+	ioQueue.add(new DataPair(key, imageData, extension));
+	return key;
     }
 
     public static ImageRepository getInstance() {
@@ -101,7 +156,7 @@ public class ImageRepository {
 	public Thread newThread(Runnable r) {
 	    Thread t = new Thread(r);
 	    t.setName("I/O Thread " + counter.getAndIncrement());
-	    t.setDaemon(true);
+	    t.setDaemon(false);
 	    return t;
 	}
 
@@ -112,9 +167,12 @@ public class ImageRepository {
 	private String key;
 	private byte[] data;
 
-	public DataPair(String key, byte[] data) {
+	private String extension;
+
+	public DataPair(String key, byte[] data, String extension) {
 	    this.key = key;
 	    this.data = data;
+	    this.extension = extension;
 	}
 
 	public String getKey() {
@@ -123,6 +181,10 @@ public class ImageRepository {
 
 	public byte[] getData() {
 	    return data;
+	}
+
+	public String getExtension() {
+	    return extension;
 	}
 
     }
