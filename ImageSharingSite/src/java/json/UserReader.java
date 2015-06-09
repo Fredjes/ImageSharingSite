@@ -12,11 +12,15 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.ext.Provider;
 
 /**
  *
  * @author Frederik
  */
+@Provider
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserReader implements MessageBodyReader<User> {
 
     @Override

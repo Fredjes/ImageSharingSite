@@ -7,18 +7,22 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonWriter;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
+import javax.ws.rs.ext.Provider;
 
 /**
  *
  * @author Frederik
  */
+@Provider
+@Produces(MediaType.APPLICATION_JSON)
 public class UserListWriter implements MessageBodyWriter<List<User>> {
 
     @Override

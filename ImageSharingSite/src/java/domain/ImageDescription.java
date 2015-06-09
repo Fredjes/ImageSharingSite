@@ -22,7 +22,7 @@ public class ImageDescription implements Serializable {
     private String title;
     private String description;
     private String fileReference;
-    
+
     @Enumerated(EnumType.STRING)
     private Visibility visibility;
 
@@ -40,7 +40,7 @@ public class ImageDescription implements Serializable {
 	this.visibility = visibility;
 	this.owner = owner;
     }
-    
+
     public String getId() {
 	return id;
     }

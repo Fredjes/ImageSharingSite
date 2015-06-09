@@ -1,231 +1,231 @@
 <html>
     <head><title>API spec</title></head>
     <body style="font-family: Calibri;">
-	<b>Note: </b>By default all returned data is JSON.
-	<h2>Users</h2>
-	<h3>/users</h3>
-	<ul>
-	    <li>
-		<h4><b>GET: </b>Get the list of all users.</h4>
-		<ul>
-		    <li><b>Send: </b>Nothing</li>
-		    <li>
-			<b>Receive: </b> Data of all users.<br/>
-			<code>
-			    [
-			    {
-			    "profile-picture-id": "123abc",
-			    "username": "FrederikDS",
-			    "score": 58
-			    }, { ... }, ...
-			    ]
-			</code>
-		    </li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>200</b>, normal procedure, all data returned.</li>
-			    <li><b>403</b>, not authorized to view all users.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	    <li>
-		<h4><b>POST: </b>Add a user to the list of users.</h4>
-		<ul>
-		    <li>
-			<b>Send: </b>JSON data of the user
-			<code>
-			    {
-			    "username": "FrederikDS",
-			    "email": "frederik.de.smedt@hotmail.com",
-			    "password": "password123"
-			    }
-			</code>
-		    </li>
-		    <li><b>Receive: </b>Nothing</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>201</b>, user is created correctly.</li>
-			    <li><b>400</b>, user is already used.</li>
-			    <li><b>400</b>, password does not meet requirements.</li>
-			    <li><b>400</b>, not all fields are filled in correctly.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
+        <b>Note: </b>By default all returned data is JSON.
+        <h2>Users</h2>
+        <h3>/users</h3>
+        <ul>
+            <li>
+                <h4><b>GET: </b>Get the list of all users.</h4>
+                <ul>
+                    <li><b>Send: </b>Nothing</li>
+                    <li>
+                        <b>Receive: </b> Data of all users.<br/>
+                        <code>
+                            [
+                            {
+                            "profile-picture-id": "123abc",
+                            "username": "FrederikDS",
+                            "score": 58
+                            }, { ... }, ...
+                            ]
+                        </code>
+                    </li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>200</b>, normal procedure, all data returned.</li>
+                            <li><b>403</b>, not authorized to view all users.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <h4><b>POST: </b>Add a user to the list of users.</h4>
+                <ul>
+                    <li>
+                        <b>Send: </b>JSON data of the user
+                        <code>
+                            {
+                            "username": "FrederikDS",
+                            "email": "frederik.de.smedt@hotmail.com",
+                            "password": "password123"
+                            }
+                        </code>
+                    </li>
+                    <li><b>Receive: </b>Nothing</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>201</b>, user is created correctly.</li>
+                            <li><b>400</b>, user is already used.</li>
+                            <li><b>400</b>, password does not meet requirements.</li>
+                            <li><b>400</b>, not all fields are filled in correctly.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
 
-	<h3>/users/{username}</h3>
-	<ul>
-	    <li>
-		<h4><b>GET: </b>Get all the details of a user.</h4>
-		<ul>
-		    <li><b>Send: </b>Nothing</li>
-		    <li>
-			<b>Receive: </b> The following user data, or a subset, based on the authentication:
-			<code>
-			    {
-			    "profile-picture-id": "123abc",
-			    "username": "FrederikDS",
-			    "email": "frederik.de.smedt@hotmail.com",
-			    "score": 56,
-			    "uploaded-images": ["2b5963", "f87yz8"]
-			    }
-			</code>
-		    </li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>200</b>, normal procedure, all data returned.</li>
-			    <li><b>403</b>, not authorized to view all user data.</li>
-			    <li><b>404</b>, user does not exist.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	    <li>
-		<h4><b>PUT: </b>Change user data.</h4>
-		<ul>
-		    <li>
-			<b>Send: </b>JSON data of the user
-			<code>
-			    {
-			    "username": "FrederikDS2"
-			    "email": "frederik.de.smedt2@hotmail.com",
-			    "password-hash": "5cd3c3f68fcc83b27e9d42d90431a72499f17875c81a599b566c9889b9696703"
-			    }
-			</code>
-		    </li>
-		    <li><b>Receive: </b>Nothing</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>204</b>, user is removed correctly.</li>
-			    <li><b>403</b>, not authorized to delete user.</li>
-			    <li><b>404</b>, user does not exist.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
-	<h2>Images</h2>
-	<h3>/img/{imgid}?format={imgformat}</h3>
-	<ul>
-	    <li>
-		<h4><b>GET: </b>Get a specific image.</h4>
-		<ul>
-		    <li><b>Send: </b>Nothing</li>
-		    <li><b>Receive: </b>Image, by default in PNG format, otherwise in the specified file format.</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>200</b>, the image is returned.</li>
-			    <li><b>404</b>, image is not available.</li>
-			    <li><b>403</b>, unauthorized access, image is private.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
-	<h3>/img</h3>
-	<ul>
-	    <li>
-		<h4><b>POST: </b>Add the image description.</h4>
-		<ul>
-		    <li><b>Send: </b>Image description</li>
-		    <li><b>Receive: </b>Nothing.</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>201</b>, the image description is added.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
-	<h3>/img?size={size}</h3>
-	<ul>
-	    <li>
-		<h4><b>GET: </b>Get {size} random images.</h4>
-		<ul>
-		    <li><b>Send: </b>Nothing.</li>
-		    <li><b>Receive: </b>A list of {size} random images.
-				<code>
-					[ "1234ab", "5678cd", ... ]
-				</code>
-			</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>200</b>, set of public images returned.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
-	<h3>/img/{imgid}</h3>
-	<ul>
-	    <li>
-		<h4><b>PUT: </b>Change the image.</h4>
-		<ul>
-		    <li><b>Send: </b>Image</li>
-		    <li><b>Receive: </b>Nothing.</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>403</b>, not authorized to change the image.</li>
-			    <li><b>404</b>, the image does not exist.</li>
-			    <li><b>204</b>, the image is changed.</li>
-			    <li><b>400</b>, invalid image.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
-	<h3>/img/{imgid}</h3>
-	<ul>
-	    <li>
-		<h4><b>PUT: </b>Change the image description</h4>
-		<ul>
-		    <li><b>Send: </b>Image description.
-				<code>
-					{
-						"title": "My image",
-						"description": "The description of my image"
-					}
-				</code>
-			</li>
-		    <li><b>Receive: </b>Nothing.</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>403</b>, not authorized to change the image description.</li>
-			    <li><b>404</b>, the image does not exist.</li>
-			    <li><b>204</b>, the image description is changed.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
-	<h3>/img/{imgid}</h3>
-	<ul>
-	    <li>
-		<h4><b>DELETE: </b>Delete the specified image and image description.</h4>
-		<ul>
-		    <li><b>Send: </b>Nothing.</li>
-		    <li><b>Receive: </b>Nothing.</li>
-		    <li>
-			Return codes:
-			<ul>
-			    <li><b>403</b>, not authorized to delete the image.</li>
-			    <li><b>404</b>, the image does not exist.</li>
-			    <li><b>204</b>, the image is deleted.</li>
-			</ul>
-		    </li>
-		</ul>
-	    </li>
-	</ul>
+        <h3>/users/{username}</h3>
+        <ul>
+            <li>
+                <h4><b>GET: </b>Get all the details of a user.</h4>
+                <ul>
+                    <li><b>Send: </b>Nothing</li>
+                    <li>
+                        <b>Receive: </b> The following user data, or a subset, based on the authentication:
+                        <code>
+                            {
+                            "profile-picture-id": "123abc",
+                            "username": "FrederikDS",
+                            "email": "frederik.de.smedt@hotmail.com",
+                            "score": 56,
+                            "uploaded-images": ["2b5963", "f87yz8"]
+                            }
+                        </code>
+                    </li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>200</b>, normal procedure, all data returned.</li>
+                            <li><b>403</b>, not authorized to view all user data.</li>
+                            <li><b>404</b>, user does not exist.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <h4><b>PUT: </b>Change user data.</h4>
+                <ul>
+                    <li>
+                        <b>Send: </b>JSON data of the user
+                        <code>
+                            {
+                            "username": "FrederikDS2"
+                            "email": "frederik.de.smedt2@hotmail.com",
+                            "password-hash": "5cd3c3f68fcc83b27e9d42d90431a72499f17875c81a599b566c9889b9696703"
+                            }
+                        </code>
+                    </li>
+                    <li><b>Receive: </b>Nothing</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>204</b>, user is removed correctly.</li>
+                            <li><b>403</b>, not authorized to delete user.</li>
+                            <li><b>404</b>, user does not exist.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h2>Images</h2>
+        <h3>/img/{imgid}?format={imgformat}</h3>
+        <ul>
+            <li>
+                <h4><b>GET: </b>Get a specific image.</h4>
+                <ul>
+                    <li><b>Send: </b>Nothing</li>
+                    <li><b>Receive: </b>Image, by default in PNG format, otherwise in the specified file format.</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>200</b>, the image is returned.</li>
+                            <li><b>404</b>, image is not available.</li>
+                            <li><b>403</b>, unauthorized access, image is private.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h3>/img</h3>
+        <ul>
+            <li>
+                <h4><b>POST: </b>Add the image description.</h4>
+                <ul>
+                    <li><b>Send: </b>Image description</li>
+                    <li><b>Receive: </b>Nothing.</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>201</b>, the image description is added.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h3>/img?size={size}</h3>
+        <ul>
+            <li>
+                <h4><b>GET: </b>Get {size} random images.</h4>
+                <ul>
+                    <li><b>Send: </b>Nothing.</li>
+                    <li><b>Receive: </b>A list of {size} random images.
+                        <code>
+                            [ "1234ab", "5678cd", ... ]
+                        </code>
+                    </li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>200</b>, set of public images returned.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h3>/img/{imgid}</h3>
+        <ul>
+            <li>
+                <h4><b>PUT: </b>Change the image.</h4>
+                <ul>
+                    <li><b>Send: </b>Image</li>
+                    <li><b>Receive: </b>Nothing.</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>403</b>, not authorized to change the image.</li>
+                            <li><b>404</b>, the image does not exist.</li>
+                            <li><b>204</b>, the image is changed.</li>
+                            <li><b>400</b>, invalid image.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h3>/img/{imgid}</h3>
+        <ul>
+            <li>
+                <h4><b>PUT: </b>Change the image description</h4>
+                <ul>
+                    <li><b>Send: </b>Image description.
+                        <code>
+                            {
+                            "title": "My image",
+                            "description": "The description of my image"
+                            }
+                        </code>
+                    </li>
+                    <li><b>Receive: </b>Nothing.</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>403</b>, not authorized to change the image description.</li>
+                            <li><b>404</b>, the image does not exist.</li>
+                            <li><b>204</b>, the image description is changed.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h3>/img/{imgid}</h3>
+        <ul>
+            <li>
+                <h4><b>DELETE: </b>Delete the specified image and image description.</h4>
+                <ul>
+                    <li><b>Send: </b>Nothing.</li>
+                    <li><b>Receive: </b>Nothing.</li>
+                    <li>
+                        Return codes:
+                        <ul>
+                            <li><b>403</b>, not authorized to delete the image.</li>
+                            <li><b>404</b>, the image does not exist.</li>
+                            <li><b>204</b>, the image is deleted.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </body>
 </html>

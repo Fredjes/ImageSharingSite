@@ -130,13 +130,13 @@ public class User implements Serializable {
 
     public static String createPasswordHash(String password) {
 	try {
-            BigInteger hash = new BigInteger(1, MessageDigest.getInstance("SHA-256")
-                    .digest(password.getBytes("UTF-8")));
-            return hash.toString(16);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
-            Logger.getLogger(User.class.getName()).log(Level.SEVERE, "Cannot create password hash", ex);
-        }
-	
+	    BigInteger hash = new BigInteger(1, MessageDigest.getInstance("SHA-256")
+		    .digest(password.getBytes("UTF-8")));
+	    return hash.toString(16);
+	} catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+	    Logger.getLogger(User.class.getName()).log(Level.SEVERE, "Cannot create password hash", ex);
+	}
+
 	return "";
     }
 
